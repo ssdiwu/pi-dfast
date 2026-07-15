@@ -1,0 +1,54 @@
+{
+  "name": "@diwu507/pi-dfast",
+  "version": "0.1.0",
+  "description": "A safe session-scoped Fast Mode controller for OpenAI Codex requests in Pi.",
+  "type": "module",
+  "main": "index.ts",
+  "files": [
+    "index.ts",
+    "src",
+    "README.md",
+    "AGENTS.md",
+    "doc",
+    "CHANGELOG.md",
+    "LICENSE",
+    "tsconfig.json"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && npm test",
+    "prepack": "npm run check"
+  },
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "pi-coding-agent",
+    "openai-codex",
+    "fast-mode",
+    "service-tier"
+  ],
+  "license": "MIT",
+  "author": "diwu",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ssdiwu/pi-dfast.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "pi": {
+    "extensions": [
+      "./index.ts"
+    ]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "^0.80.7",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.0"
+  }
+}
