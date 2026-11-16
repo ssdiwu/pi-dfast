@@ -6,23 +6,23 @@
 
 ## 阅读顺序
 
-1. `README.md`：功能、边界、命令和验证方式。
-2. `doc/README.md`：文档入口与公开协议。
-3. `doc/术语表.md`：项目术语。
-4. `src/fast-mode.ts`：模型资格与请求注入纯逻辑。
-5. `src/session-state.ts`：会话状态记录与恢复。
-6. `index.ts`：Pi Extension（扩展）入口。
+1. `README.md`：使用者视角的命令、安装与验证方式。
+2. `doc/README.md`：文档入口。
+3. `doc/规格.md`：当前机制与边界的唯一正文。
+4. `doc/术语表.md`：项目术语。
+5. `doc/决策档案/README.md`：难逆转决策索引。
+6. `src/fast-mode.ts`：模型资格与请求注入纯逻辑。
+7. `src/session-state.ts`：会话状态记录与恢复。
+8. `index.ts`：Pi Extension（扩展）入口。
 
 ## 实现边界
 
-- 每个新会话默认关闭；状态只写入当前 session（会话），恢复该会话时再恢复开关。
-- 禁止从全局或项目配置继承默认开启状态，其他会话不得受到当前会话影响。
-- 只允许 `openai-codex` 且在明确支持列表内的模型。
-- 注入前同时核对当前模型与 provider payload（提供方请求载荷）的模型，避免错改请求。
-- 只增加 `service_tier: "priority"`，不修改 Prompt（提示词）、verbosity（回答详略）或其他采样参数。
-- 不读取或修改认证信息，不支持 API Key（API 密钥）提供方。
-- 不调用 `setFooter()`；只使用公开 `setStatus()` 和版本化事件协议。
-- 不把“已开启”误写成“服务端已确认”；`active` 仅表示当前请求满足本地注入条件。
+实现边界以 `doc/规格.md` 为唯一正文，本文件不重复抄写。改动时遵守以下约束：
+
+- 任何行为变化先改 `doc/规格.md` 对应小节，再改代码；`README.md` 只保留使用者视角摘要。
+- 难逆转决定记入 `doc/决策档案/`（以「后记」追加，不改写原文）；可改做法追加经验笔记。
+- 用户可感知的已完成变化写 `doc/references/CHANGELOG.md`；本机原始现场放 `.artifacts/`（Git 忽略）。
+- 不得从 `doc/references/` 的历史记录倒推当前行为。
 
 ## 验证
 

@@ -1,25 +1,42 @@
 # pi-dfast 文档入口
 
-## 阅读地图
+1. [工程入口](../README.md)：使用者视角的命令、安装与验证。
+2. [现行规格](./规格.md)：当前机制与边界的唯一正文。
+3. [术语表](./术语表.md)：项目术语。
+4. [决策档案](./决策档案/README.md)：难逆转决策的索引。
+5. [证据与历史](./references/)：来源、验证与历史记录，不是现行权威。
+6. [代理协作规则](../AGENTS.md)：本仓库的工作依据与约定。
 
-- `../README.md`：产品边界、命令、安装与验证。
-- `术语表.md`：项目术语。
-- `决策档案/README.md`：关键架构决策索引。
-- `../src/fast-mode.ts`：支持模型和请求注入规则。
-- `../src/session-state.ts`：当前会话分支里的状态记录与恢复规则。
-- `../index.ts`：Pi 生命周期及跨扩展事件协议。
+`doc/规格.md` 是当前机制的唯一正文；`doc/决策档案/` 是难逆转决策的刻碑；`doc/references/` 只保存来源、验证证据与历史阶段记录，不作为并行需求或现行实现权威。
 
-## 公开状态协议
+本机原始现场（截图、抓包、原始日志）放仓库根 `.artifacts/`，已被 Git 忽略；引用它不表示文件随仓库分发。
 
-消费者通过 Pi 事件总线使用以下事件：
+根上无 `PLAN.md`：本仓库没有落在仓库文档里的当前执行状态正文。
 
-- `pi-dfast/subscribe` / `pi-dfast/unsubscribe`：载荷为 `{ version: 1, consumerId: string }`。
-- `pi-dfast/updated`：载荷为版本化 `DFastSnapshot`，包含开关状态、当前模型、本地是否满足注入条件、原因和更新时间。
+## 现行规格（`doc/规格.md`）
 
-快照中的 `active` 表示本地会为当前模型请求注入 Priority Service Tier（优先服务等级），不表示服务端已经确认 Fast Mode 生效。
+| 节 | 回答什么 |
+|---|---|
+| 会话与状态边界 | 默认关闭、状态写入当前 session、分支恢复规则 |
+| 请求注入 | 注入字段、模型双重核对、不改动的其他参数 |
+| 支持模型 | 当前允许列表与排除项 |
+| 公开状态协议 | 事件载荷、`DFastSnapshot`、原生 status 显隐规则 |
+| 与其他扩展协作 | `pi-dusage`、`pi-dstatus` 的组合边界 |
 
-首个结构化消费者订阅后，`pi-dfast` 清除原生 `dfast` status；最后一个消费者取消订阅后恢复，避免自定义 Footer 重复展示同一状态。
+## 决策档案（`doc/决策档案/`）
 
-## 会话边界
+| 文件 | 内容 |
+|---|---|
+| [0001-控制查询展示解耦.md](./决策档案/0001-控制查询展示解耦.md) | Fast 控制、quota 查询与 Footer 展示由独立扩展通过公开事件协议组合 |
 
-Fast Mode 状态以 `pi-dfast-state` Custom Entry（自定义记录）写入当前 session，不进入 LLM context（模型上下文）。新会话没有该记录，因此一定关闭；恢复已有会话或切换会话树分支时，只读取当前分支最后一条有效记录。
+## 证据与历史（`doc/references/`）
+
+| 文件 | 内容 |
+|---|---|
+| [CHANGELOG.md](./references/CHANGELOG.md) | 版本沿革（Keep a Changelog 格式） |
+
+## 维护规则
+
+- 机制、边界或支持模型变化 → 更新 `doc/规格.md`；术语变化 → 更新 `doc/术语表.md`；难逆转决策 → 记入 `doc/决策档案/` 并同步索引。
+- 用户可感知的已完成变化 → `doc/references/CHANGELOG.md`；本机原始现场 → `.artifacts/`（Git 忽略）。
+- 验证命令以 `README.md`「验证」与 `AGENTS.md`「验证」为准，实际验证记录 → `doc/references/`。
