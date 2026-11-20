@@ -9,13 +9,13 @@
 - 开启且当前模型受支持时，请求只增加 `service_tier: "priority"`，不修改 Prompt（提示词）、verbosity（回答详略）、thinking level（思考等级）或认证信息。
 - 通过 `setStatus("dfast", ...)` 提供原生状态，并发布 `pi-dfast/updated` 版本化快照；有结构化消费者时隐藏原生状态，避免 Footer 重复显示。
 
-行为、边界与支持模型的唯一正文见 [doc/规格.md](doc/规格.md)；本节只作使用者视角的摘要。
+行为、边界与支持模型的唯一正文见 [doc/规格/现行规格.md](doc/规格/现行规格.md)；本节只作使用者视角的摘要。
 
 ## 支持范围
 
 当前只允许 `openai-codex` 的 `gpt-5.4`、`gpt-5.5`、`gpt-5.6-luna`、`gpt-5.6-sol`、`gpt-5.6-terra`。
 
-`gpt-5.4-mini` 与 `gpt-5.3-codex-spark` 当前不在允许列表。允许列表表示本地会注入 Priority Service Tier（优先服务等级），不构成服务端 entitlement（资格）或实际加速证明。完整列表见 [doc/规格.md](doc/规格.md)。
+`gpt-5.4-mini` 与 `gpt-5.3-codex-spark` 当前不在允许列表。允许列表表示本地会注入 Priority Service Tier（优先服务等级），不构成服务端 entitlement（资格）或实际加速证明。完整列表见 [doc/规格/现行规格.md](doc/规格/现行规格.md)。
 
 ## 命令
 
@@ -69,5 +69,5 @@ pi --no-extensions -e . --no-session -p "/fast status"
 ## 文档
 
 - [doc/README.md](doc/README.md)：文档入口。
-- [doc/规格.md](doc/规格.md)：现行机制与边界的唯一正文。
+- [doc/规格/现行规格.md](doc/规格/现行规格.md)：现行机制与边界的唯一正文。
 - [doc/references/CHANGELOG.md](doc/references/CHANGELOG.md)：版本沿革。
