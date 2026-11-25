@@ -1,6 +1,6 @@
 {
   "name": "@diwu507/pi-dfast",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A safe session-scoped Fast Mode controller for OpenAI Codex requests in Pi.",
   "type": "module",
   "main": "index.ts",
@@ -8,9 +8,10 @@
     "index.ts",
     "src",
     "README.md",
+    "README-zh.md",
     "AGENTS.md",
     "doc",
-    "CHANGELOG.md",
+    "CHANGELOG-zh.md",
     "LICENSE",
     "tsconfig.json"
   ],
@@ -38,6 +39,7 @@
     "access": "public"
   },
   "pi": {
+    "changelogPath": "./doc/references/CHANGELOG.md",
     "extensions": [
       "./index.ts"
     ]
@@ -46,7 +48,7 @@
     "@earendil-works/pi-coding-agent": "*"
   },
   "devDependencies": {
-    "@earendil-works/pi-coding-agent": "^0.80.7",
+    "@earendil-works/pi-coding-agent": "1.6.0",
     "@types/node": "^22.0.0",
     "typescript": "^5.9.3",
     "vitest": "^2.1.0"

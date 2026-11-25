@@ -1,23 +1,25 @@
 # pi-dfast
 
-`pi-dfast` 是一个职责单一的 Pi Extension（扩展）：为符合资格的 OpenAI Codex 请求控制 Fast Mode（快速模式）。
+English | [中文](./README-zh.md)
 
-## 行为
+A single-responsibility Pi extension (扩展) that controls Fast Mode (快速模式) for eligible OpenAI Codex requests.
 
-- 每个新会话都默认关闭；`/fast on|off` 只对当前会话生效，恢复同一会话时恢复自己的开关。
-- 在 session tree（会话树）切换分支时，状态沿当前分支记录恢复，不从另一条分支泄漏。
-- 开启且当前模型受支持时，请求只增加 `service_tier: "priority"`，不修改 Prompt（提示词）、verbosity（回答详略）、thinking level（思考等级）或认证信息。
-- 通过 `setStatus("dfast", ...)` 提供原生状态，并发布 `pi-dfast/updated` 版本化快照；有结构化消费者时隐藏原生状态，避免 Footer 重复显示。
+## Behavior
 
-行为、边界与支持模型的唯一正文见 [doc/规格/现行规格.md](doc/规格/现行规格.md)；本节只作使用者视角的摘要。
+- Every new session starts with Fast Mode off; `/fast on|off` applies to the current session only, and resuming the same session restores its own toggle.
+- When switching branches in the session tree (会话树), the state is restored along the current branch and never leaks from another branch.
+- When enabled and the current model is supported, the request only gains `service_tier: "priority"`; the prompt (提示词), verbosity (回答详略), thinking level (思考等级) and credentials are left untouched.
+- A native status is exposed through `setStatus("dfast", ...)` and a versioned `pi-dfast/updated` snapshot is published; the native status is hidden when structured consumers exist, to avoid duplicated footer output.
 
-## 支持范围
+The only body of truth for behavior, boundaries and supported models is [`doc/规格/现行规格.md`](doc/规格/现行规格.md); this section is a user-facing summary.
 
-当前只允许 `openai-codex` 的 `gpt-5.4`、`gpt-5.5`、`gpt-5.6-luna`、`gpt-5.6-sol`、`gpt-5.6-terra`。
+## Supported scope
 
-`gpt-5.4-mini` 与 `gpt-5.3-codex-spark` 当前不在允许列表。允许列表表示本地会注入 Priority Service Tier（优先服务等级），不构成服务端 entitlement（资格）或实际加速证明。完整列表见 [doc/规格/现行规格.md](doc/规格/现行规格.md)。
+Only `gpt-5.4`, `gpt-5.5`, `gpt-5.6-luna`, `gpt-5.6-sol` and `gpt-5.6-terra` of `openai-codex` are currently allowed.
 
-## 命令
+`gpt-5.4-mini` and `gpt-5.3-codex-spark` are currently not in the allow list. The allow list means that Priority Service Tier (优先服务等级) is injected locally; it is not a proof of server-side entitlement (资格) or of an actual speed-up. See [`doc/规格/现行规格.md`](doc/规格/现行规格.md) for the full list.
+
+## Commands
 
 ```text
 /fast
@@ -26,48 +28,71 @@
 /fast status
 ```
 
-- `/fast`：切换开关。
-- `/fast on|off`：显式设置，适合脚本和可重复验证。
-- `/fast status`：显示开关、当前模型与本地是否满足注入条件。
+- `/fast`: toggles the switch.
+- `/fast on|off`: sets the switch explicitly, suitable for scripts and repeatable verification.
+- `/fast status`: shows the switch, the current model, and whether local injection conditions are met.
 
-在 `--no-session` 或尚未产生持久化 session file（会话文件）的临时进程中，开关只对该进程有效；正常交互会话产生会话文件后才能在下次恢复时还原。
+With `--no-session`, or in a temporary process that has not produced a persistent session file (会话文件), the switch only applies to that process; in a normal interactive session the previous state is restored only after a session file exists.
 
-## 与其他扩展组合
+## Composition with other extensions
 
-- `pi-dusage`：Fast 对当前 Codex 模型变为活动时立即合并刷新 quota（配额）。
-- `pi-dstatus`：独立 `fast` 组件显示 `FAST` 或 `FAST · inactive`；关闭时隐藏。
+- `pi-dusage`: merges an immediate quota (配额) refresh when Fast becomes active for the current Codex model.
+- `pi-dstatus`: the standalone `fast` component shows `FAST` or `FAST · inactive`; it is hidden when Fast is off.
 
-三者只通过版本化 Pi 事件协议连接，不读取彼此私有配置。
+The three extensions are connected only through the versioned Pi event protocol; none of them reads another's private configuration.
 
-## 安装
+## Installation
 
-### 本地开发
+### Local development
 
 ```bash
-cd /Users/diwu/Workspace/Codes/Githubs/pi-extensions/pi-dfast
+git clone https://github.com/ssdiwu/pi-dfast.git
+cd pi-dfast
 npm install
 pi --no-extensions -e .
 ```
 
-也可以把本仓库绝对路径加入 `~/.pi/agent/settings.json` 的 `packages` 后执行 `/reload`。
+You can also add this repository's absolute path to the `packages` list in `~/.pi/agent/settings.json` and then run `/reload`.
 
-### npm（发布后）
+### npm
 
 ```bash
 pi install npm:@diwu507/pi-dfast
 ```
 
-## 验证
+## Development
+
+```bash
+npm install
+npm run check          # typecheck + vitest run
+```
+
+Load the checkout directly in Pi:
+
+```bash
+pi --no-extensions -e . --no-session -p "/fast status"
+```
+
+## Verification
 
 ```bash
 npm run check
 pi --no-extensions -e . --no-session -p "/fast status"
 ```
 
-真实请求验证应使用支持列表中的 `openai-codex` 模型，并确认：关闭时载荷不变、开启时只增加 `service_tier: "priority"`、不支持模型显示 inactive 且不注入。
+Real request verification should use a supported `openai-codex` model and confirm: the payload is unchanged when off, only `service_tier: "priority"` is added when on, and unsupported models show inactive without injection. The `before_provider_request` behavior test covers the injection decision; it does not replace a real request.
 
-## 文档
+## Contributing
 
-- [doc/README.md](doc/README.md)：文档入口。
-- [doc/规格/现行规格.md](doc/规格/现行规格.md)：现行机制与边界的唯一正文。
-- [doc/references/CHANGELOG.md](doc/references/CHANGELOG.md)：版本沿革。
+- Read [`AGENTS.md`](AGENTS.md) first, then [`doc/README.md`](doc/README.md) and the current mechanism text in [`doc/规格/现行规格.md`](doc/规格/现行规格.md).
+- Behavior changes update the specification document first, then the code, then both READMEs (`README.md` in English and `README-zh.md` in Chinese) — the two versions must stay semantically in sync.
+- Public protocol changes (the `pi-dfast/updated` snapshot, native status behavior) must land with matching behavior tests.
+- User-perceivable changes go to the changelog: daily Chinese entries are kept in [`CHANGELOG-zh.md`](CHANGELOG-zh.md) in this repository, and each released version mirrors the same user-perceivable facts into the English changelog in [`doc/references/CHANGELOG.md`](doc/references/CHANGELOG.md) (also referenced by `pi.changelogPath`). That file is the single English changelog body; do not create a second one. Both changelogs and both READMEs ship in the npm package.
+- One commit does one thing and follows Conventional Commits (约定式提交). Do not commit, push, tag or publish without explicit authorization.
+
+## Documentation
+
+- [doc/README.md](doc/README.md): document entry point.
+- [doc/规格/现行规格.md](doc/规格/现行规格.md): the only body of truth for the current mechanism and boundaries.
+- [doc/references/CHANGELOG.md](doc/references/CHANGELOG.md): version history (single English changelog).
+- [CHANGELOG-zh.md](CHANGELOG-zh.md): daily Chinese changelog, also shipped in the npm package.
